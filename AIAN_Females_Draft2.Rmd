@@ -1,0 +1,127 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+library(tidyverse)
+library(censusapi)
+library(dplyr)
+library(tidycensus)
+library(ggplot2)
+
+
+```{r}
+#created a text file with the api key, read in
+key=read_lines('data/key.txt')
+```
+```{r}
+#create dataset for us census apis
+apis <- listCensusApis()
+#view(apis)
+```
+```{r}
+#look into metadata for acs1/2019
+metadata <- listCensusMetadata(
+  name = "acs/acs1/profile",
+  vintage = 2019)
+```
+```{r}
+#view(metadata)
+```
+```{r}
+#listCensusMetadata(type = "variables")
+```
+Pull in General US population data on race, exclude "Hispanic or Latino" ("DP05_0071PE")
+```{r}
+gen_pop <- getCensus(
+  key = key,
+  name = "acs/acs1/profile", 
+  vintage = 2019,
+  vars = c("DP05_0033PE", "DP05_0039PE", "DP05_0038PE", "DP05_0044PE", "DP05_0052PE", "DP05_0037PE", "DP05_0035PE", "DP05_0057PE"),
+  #United States
+  region = "us:*") 
+  #State of TN
+  #regionin = 'state:47') 
+
+```
+Rename columns
+```{r}
+gen_pop <- gen_pop %>% 
+  rename("Total Pop" = DP05_0033PE, "American Indian and Alaska Native" = DP05_0039PE, "Asian" = DP05_0044PE, "Black or African American" = DP05_0038PE, "Native Hawaiian and Other Pacific Islander" = DP05_0052PE, "White" = DP05_0037PE, "Two or more races" = DP05_0035PE, "Some Other Race" = DP05_0057PE)
+```
+```{r}
+view(gen_pop)
+```
+
+convert to test csv file
+```{r}
+write.csv(gen_pop,"data/us_pop_stats.csv", row.names = TRUE)
+```
+Read in National Victimization Report, specify columns for Year, Race, Violent Crime, #select_vars(vars = "Year", "V2040A", "V3086", "V4529")
+```{r}
+natl_crime <- read_tsv("data/37689-0002-Data.tsv")
+ 
+```
+
+```{r}
+natl_crime
+#natl_crime <- natl_crime %>% 
+#select(Year, xx) 
+```
+Read in and merge the NamUS datasets
+```{r}
+# miss_AIAN <- read_csv("data/NamUs_Misssing_AIAN_Female.csv")
+# view(miss_AIAN)
+```
+Read in all female missing persons dataset
+```{r}
+miss_all <- read_csv("data/NamUs_all_fem_missing.csv")
+
+```
+```{r}
+view(miss_all)
+```
+Remove unnecessary columns 
+```{r}
+miss_all_narrow <- miss_all%>% 
+  subset(select=-c(`Last Name`, `First Name`, `Missing Age`, City, County, Sex, `Date Modified`))
+  
+```
+convert DLC to date 
+```{r}
+list(miss_all_narrow)
+```
+```{r}
+class(miss_all_narrow$DLC)
+```
+```{r}
+miss_all_narrow["DLC_new"] <- lapply(miss_all_narrow["DLC"] , as.Date, "%m/%d/%Y" )
+```
+
+```{r}
+view(miss_all_narrow)
+```
+
+
+```{r}
+#miss_all <- miss_all %>% 
+  #rename(miss_all, Case_Number = `Case Number`, Date_Last_Contact = DLC, Race = `Race / Ethnicity`)
+
+```
+
+plot all NamUs female missing persons by race and date 
+```{r}
+#miss_all %>% 
+  #ggplot(aes(x = DLC_new, y = Race / Ethnicity))+
+  #geom_line()
+
+```
+bring in CDC violent deaths dataset
+```{r}
+viol_deaths <- read.csv("data/WISQARS_all_race_vio_deaths_suic_female_all_metro_by_year.csv")
+```
+```{r}
+print(viol_deaths)
+```
+
+
