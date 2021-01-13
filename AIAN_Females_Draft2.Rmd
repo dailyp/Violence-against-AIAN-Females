@@ -61,7 +61,7 @@ write.csv(gen_pop,"data/us_pop_stats.csv", row.names = TRUE)
 Read in National Victimization Report, specify columns for Year, Race, Violent Crime
 ```{r}
 #natl_crime <- load(file = "data/37689-0003-Data.rda")
-#natl_crime <- read_tsv("data/37689-0003-Data.tsv")
+natl_crime <- read.table(file = "data/37689-0003-Data.tsv", sep = '\t', header = TRUE)
 ```
 Keep columns for Year, Current Gender, Race, Crime Type.  Weight using Series_Weight (per BJS)
 
@@ -70,7 +70,7 @@ Keep columns for Year, Current Gender, Race, Crime Type.  Weight using Series_We
   #select("Year", "V3086", "V3023a", "V3024a", "V4529", "SERIES_WEIGHT")
 
 ```
-Read in and merge the NamUS missing AIAN dataset and clean 
+#Read in and merge the NamUS missing AIAN dataset and clean 
 ```{r}
 miss_AIAN <- read_csv("data/NamUs_Missing_AIAN_Female.csv")
 view(miss_AIAN)
@@ -141,13 +141,34 @@ remove multi-races from Race_Ethnic column (\,[^,]*$)
 ```
 plot all NamUs female missing persons by race and date 
 ```{r}
+miss_AIAN %>%
+  group_by(Date_Last_Contact) %>%
+  count(Case_Number, sort = TRUE)
+  
+```
+```{r}
+miss_AIAN %>%
+  group_by(Date_Last_Contact)
+```
+```{r}
 miss_AIAN %>% 
-  #mutate(Case_Count = sum(Case_Number)) %>% 
-  ggplot(aes(x = Date_Last_Contact))+
-  geom_line()
-  #scale_y_log10()
+  group_by(Date_Last_Contact, sort = TRUE) %>% 
+  mutate(count = row_number()) %>%   
+  mutate(Missing_Count = cumsum(count))
+```
+
+
+```{r}
+#ggplot(aes(x = Date_Last_Contact, y = Missing_Number))+
+  #geom_line()
+  
+```
+```{r}
 
 ```
+
+
+
 bring in WISQARS CDC violent deaths datasets, remove unneeded columns, rename remaining columns
 ```{r}
 ```
@@ -221,5 +242,4 @@ view(cdam)
 ```{r}
 write.csv(cdam,"data/us_deaths.csv", row.names = TRUE)
 ```
-
 
