@@ -8,6 +8,7 @@ library(censusapi)
 library(dplyr)
 library(tidycensus)
 library(ggplot2)
+library(prettyR)
 
 
 ```{r}
@@ -50,30 +51,51 @@ gen_pop <- gen_pop %>%
   rename("Total Pop" = DP05_0033PE, "American Indian and Alaska Native" = DP05_0039PE, "Asian" = DP05_0044PE, "Black or African American" = DP05_0038PE, "Native Hawaiian and Other Pacific Islander" = DP05_0052PE, "White" = DP05_0037PE, "Two or more races" = DP05_0035PE, "Some Other Race" = DP05_0057PE)
 ```
 ```{r}
-view(gen_pop)
+#view(gen_pop)
 ```
 
 convert to test csv file
 ```{r}
 write.csv(gen_pop,"data/us_pop_stats.csv", row.names = TRUE)
 ```
-Read in National Victimization Report, specify columns for Year, Race, Violent Crime, #select_vars(vars = "Year", "V2040A", "V3086", "V4529")
+Read in National Victimization Report, specify columns for Year, Race, Violent Crime
 ```{r}
-natl_crime <- read_tsv("data/37689-0002-Data.tsv")
- 
+#natl_crime <- load(file = "data/37689-0003-Data.rda")
+#natl_crime <- read_tsv("data/37689-0003-Data.tsv")
 ```
+Keep columns for Year, Current Gender, Race, Crime Type.  Weight using Series_Weight (per BJS)
 
 ```{r}
-natl_crime
 #natl_crime <- natl_crime %>% 
-#select(Year, xx) 
+  #select("Year", "V3086", "V3023a", "V3024a", "V4529", "SERIES_WEIGHT")
+
 ```
-Read in and merge the NamUS datasets
+Read in and merge the NamUS missing AIAN dataset and clean 
 ```{r}
-# miss_AIAN <- read_csv("data/NamUs_Misssing_AIAN_Female.csv")
-# view(miss_AIAN)
+miss_AIAN <- read_csv("data/NamUs_Missing_AIAN_Female.csv")
+view(miss_AIAN)
 ```
-Read in all female missing persons dataset
+```{r}
+miss_AIAN <- miss_AIAN%>% 
+  subset(select=-c(`Last Name`, `First Name`, `Missing Age`, City, County, Sex, `Date Modified`))
+```
+```{r}
+miss_AIAN["DLC_new"] <- lapply(miss_AIAN["DLC"] , as.Date, "%m/%d/%Y" )
+```
+```{r}
+miss_AIAN <- miss_AIAN %>% 
+  rename(Case_Number = "Case Number", Date_Last_Contact = "DLC_new", Race_Ethnic = "Race / Ethnicity")
+```
+```{r}
+miss_AIAN <- miss_AIAN %>% 
+  select(-"DLC")
+```
+```{r}
+view(miss_AIAN)
+```
+
+
+Read in all NamUs female missing persons dataset, all races
 ```{r}
 miss_all <- read_csv("data/NamUs_all_fem_missing.csv")
 
@@ -81,7 +103,7 @@ miss_all <- read_csv("data/NamUs_all_fem_missing.csv")
 ```{r}
 view(miss_all)
 ```
-Remove unnecessary columns 
+Remove unnecessary columns and rename to "miss_all_narrow"
 ```{r}
 miss_all_narrow <- miss_all%>% 
   subset(select=-c(`Last Name`, `First Name`, `Missing Age`, City, County, Sex, `Date Modified`))
@@ -99,29 +121,105 @@ miss_all_narrow["DLC_new"] <- lapply(miss_all_narrow["DLC"] , as.Date, "%m/%d/%Y
 ```
 
 ```{r}
-view(miss_all_narrow)
+#view(miss_all_narrow)
 ```
 
 
 ```{r}
-#miss_all <- miss_all %>% 
-  #rename(miss_all, Case_Number = `Case Number`, Date_Last_Contact = DLC, Race = `Race / Ethnicity`)
+miss_all_narrow <- miss_all_narrow %>% 
+  rename(Case_Number = "Case Number", Date_Last_Contact = "DLC_new", Race_Ethnic = "Race / Ethnicity")
 
 ```
-
+```{r}
+miss_all_narrow <- miss_all_narrow %>% 
+  select(-"DLC")
+```
+remove multi-races from Race_Ethnic column (\,[^,]*$)
+```{r}
+#miss_all_race <- miss_all_narrow %>% 
+ #(str_extract(miss_all_narrow$Race_Ethnic, "\\,[^,]*$"))
+```
 plot all NamUs female missing persons by race and date 
 ```{r}
-#miss_all %>% 
-  #ggplot(aes(x = DLC_new, y = Race / Ethnicity))+
-  #geom_line()
+miss_AIAN %>% 
+  #mutate(Case_Count = sum(Case_Number)) %>% 
+  ggplot(aes(x = Date_Last_Contact))+
+  geom_line()
+  #scale_y_log10()
 
 ```
-bring in CDC violent deaths dataset
+bring in WISQARS CDC violent deaths datasets, remove unneeded columns, rename remaining columns
 ```{r}
-viol_deaths <- read.csv("data/WISQARS_all_race_vio_deaths_suic_female_all_metro_by_year.csv")
+```
+ 
+Non-metro report, female, all deaths (homicide & suicide), all races 
+
+```{r}
+deathnm <- read_csv("data/WISQARS_Vio_Death_Suicide_Women_Race_2001_2018_Nonmetro.csv")
+#view(deathnm)
+
 ```
 ```{r}
-print(viol_deaths)
+deathnm <- deathnm %>% 
+  select(-"Number of Deaths", -"Crude Rate", -"YPLL", -"Crude YPLL Rate", -"Age-Adjusted YPLL Rate", -"appliedFilters")
+```
+
+```{r}
+#colnames(deathnm)
+```
+```{r}
+deathnm <- deathnm %>% 
+  rename(Race_Ethnic = "Race / Ethnicity", AA_Rate_Nonmetro = "Age Adjusted Rate")
+
+```
+```{r}
+#view(deathnm)
+```
+Metro report, female, all deaths (homicide & suicide), all races
+```{r}
+deathm <- read_csv("data/WISQARS_Vio_Death_Suicide_Women_Race_2001_2018_Metro.csv")
+#view(deathm)
+```
+```{r}
+deathm <- deathm %>% 
+  select(-"Number of Deaths", -"Crude Rate", -"YPLL", -"Crude YPLL Rate", -"Age-Adjusted YPLL Rate", -"appliedFilters")
+```
+```{r}
+deathm <- deathm %>% 
+  rename(Race_Ethnic = "Race / Ethnicity", AA_Rate_Metro = "Age Adjusted Rate")
+```
+```{r}
+#view(deathm)
+```
+
+Combined (all) metro report, female, all deaths (homicide & suicide), all races
+```{r}
+deatham <- read_csv("data/WISQARS_Vio_Death_Suicide_Women_Race_2001_2018_Allmetro.csv")
+#view(deatham)
+```
+```{r}
+deatham <- deatham %>% 
+  select(-"Number of Deaths", -"Crude Rate", -"YPLL", -"Crude YPLL Rate", -"Age-Adjusted YPLL Rate", -"appliedFilters")
+```
+```{r}
+deatham <- deatham %>% 
+  rename(Race_Ethnic = "Race / Ethnicity", AA_Rate_Allmetro = "Age Adjusted Rate")
+```
+```{r}
+#view(deatham)
+```
+
+Merge CDC Fatal Deaths, called cdam (combined death all metros) and convert to .csv file
+```{r}
+cdm <- inner_join(deathm, deatham, by = "Race_Ethnic")
+#view(cdm)
+```
+```{r}
+cdam <- inner_join(cdm, deathnm, by = "Race_Ethnic")
+view(cdam)
+```
+```{r}
+write.csv(cdam,"data/us_deaths.csv", row.names = TRUE)
 ```
 
 
