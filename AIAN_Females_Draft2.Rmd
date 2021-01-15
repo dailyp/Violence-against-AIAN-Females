@@ -61,7 +61,7 @@ write.csv(gen_pop,"data/us_pop_stats.csv", row.names = TRUE)
 Read in National Victimization Report, specify columns for Year, Race, Violent Crime
 ```{r}
 #natl_crime <- load(file = "data/37689-0003-Data.rda")
-natl_crime <- read.table(file = "data/37689-0003-Data.tsv", sep = '\t', header = TRUE)
+#natl_crime <- read.table(file = "data/37689-0003-Data.tsv", sep = '\t', header = TRUE)
 ```
 Keep columns for Year, Current Gender, Race, Crime Type.  Weight using Series_Weight (per BJS)
 
@@ -73,7 +73,7 @@ Keep columns for Year, Current Gender, Race, Crime Type.  Weight using Series_We
 #Read in and merge the NamUS missing AIAN dataset and clean 
 ```{r}
 miss_AIAN <- read_csv("data/NamUs_Missing_AIAN_Female.csv")
-view(miss_AIAN)
+#view(miss_AIAN)
 ```
 ```{r}
 miss_AIAN <- miss_AIAN%>% 
@@ -101,17 +101,17 @@ miss_all <- read_csv("data/NamUs_all_fem_missing.csv")
 
 ```
 ```{r}
-view(miss_all)
+#view(miss_all)
 ```
 Remove unnecessary columns and rename to "miss_all_narrow"
 ```{r}
 miss_all_narrow <- miss_all%>% 
-  subset(select=-c(`Last Name`, `First Name`, `Missing Age`, City, County, Sex, `Date Modified`))
+  subset(select=-c(`Last Name`, `First Name`, `Missing Age`, Sex, `Date Modified`))
   
 ```
 convert DLC to date 
 ```{r}
-list(miss_all_narrow)
+#list(miss_all_narrow)
 ```
 ```{r}
 class(miss_all_narrow$DLC)
@@ -237,9 +237,164 @@ cdm <- inner_join(deathm, deatham, by = "Race_Ethnic")
 ```
 ```{r}
 cdam <- inner_join(cdm, deathnm, by = "Race_Ethnic")
-view(cdam)
+#view(cdam)
 ```
 ```{r}
 write.csv(cdam,"data/us_deaths.csv", row.names = TRUE)
+```
+```{r}
+cdam %>% 
+  ggplot(aes(y = AA_Rate_Metro, x = Race_Ethnic))+
+  geom_bar(stat = 'identity')+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
+```{r}
+cdam %>% 
+  ggplot(aes(y = AA_Rate_Nonmetro, x = Race_Ethnic))+
+  geom_bar(stat = 'identity')+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+```{r}
+cdam %>% 
+  ggplot(aes(y = AA_Rate_Allmetro, x = Race_Ethnic, color = Race_Ethnic))+
+  geom_bar(stat = 'identity')+
+  ggtitle("Female Violent Deaths by Race, all Metros, 2001-2018")+
+  #scale_colour_gradientn(colours=Spectral(4))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+Read in Trends report on violent deaths, and compare # of deaths against age-adjusted rates
+```{r}
+death_trend <- read_csv("data/WISQARS_Trends_all_deaths_all_race_all_metro.csv")
+#view(death_trend)
+```
+```{r}
+death_trend %>% 
+  ggplot(aes(x = Year, y = `Number of Deaths`, color = `Race / Ethnicity`))+
+  geom_line()
+```
+```{r}
+death_trend %>% 
+  ggplot(aes(x = Year, y = `Age Adjusted Rate` , color = `Race / Ethnicity`))+
+  geom_line()
+```
+Read in NCIC Missing Rate 
+```{r}
+ncic_miss <- read_csv("data/ncic_missing.txt")
+#view(ncic_miss)
+```
+
+```{r}
+us_deaths <- read_csv("data/us_deaths.csv")
+#view(us_deaths)
+```
+Read in WISQARS' revised homicide, suicide and both hom/suic, non-hispanic, reports with 2013 collapsed metro indicator classification
+
+```{r}
+hom <- read_csv("data/WISQARS_hom_nonhisp_2013_2013uc.csv")
+#view(hom)
+```
+```{r}
+suic <- read_csv("data/WISQARS_suic_nonhisp_2013_2013uc.csv")
+#view(suic)
+```
+```{r}
+both_death <- read_csv("data/WISQARS_hom_suic_nonhisp_2013uc.csv")
+#view(both_death)
+```
+Merge all three reports via rbind, call it us_death2
+```{r}
+hom_suic <- rbind(hom, suic)
+#view(hom_suic)
+```
+```{r}
+us_death2 <- rbind(hom_suic, both_death)
+#view(us_death2)
+```
+Remove unnecessary columns from us_death2
+```{r}
+colnames(us_death2)
+```
+```{r}
+us_death2 <- us_death2 %>% 
+  select(-"Sex", -"State", -"Ethnicity", -"Age Group", -"First Year", -"Last Year", -"Population", -"Age-Adjusted Rate")
+```
+```{r}
+us_death2 <- us_death2 %>% 
+  rename(Cause_death = "Cause of Death", Metro_type = "2013 Urbanization (Collapsed) Classification", Crude_rate = "Crude Rate", Num_Deaths = "Deaths")
+```
+```{r}
+#view(us_death2)
+```
+Convert the NAs in Metro_type to All_metros, and the "1" & "2" to Metro & Non Metro
+```{r}
+us_death2$Metro_type[is.na(us_death2$Metro_type)] <- "All Metros"
+
+```
+```{r}
+us_death2$Metro_type[us_death2$Metro_type == 1] <- "Metro"
+```
+```{r}
+us_death2$Metro_type[us_death2$Metro_type == 2] <- "Non Metro"
+```
+```{r}
+us_death2$Cause_death[us_death2$Cause_death == "Homicide/Legal Intervention Injury"] <- "Homicide"
+```
+```{r}
+us_death2$Cause_death[us_death2$Cause_death == "Suicide Injury"] <- "Suicide"
+```
+
+```{r}
+us_death2$Cause_death[us_death2$Cause_death == "Violence-Related Injury"] <- "All Violent Deaths"
+```
+
+```{r}
+view(us_death2)
+```
+Test run cause of death plot for app 
+```{r}
+write.csv(us_death2,"data/us_death2.csv", row.names = TRUE)
+```
+```{r}
+      us_death2 %>%
+        filter(Cause_death == "Suicide") %>%
+        #filter(Metro_type == input$metro) %>%
+        # filter(hispanic == input$hispanic)
+        ggplot(aes(x = Race, y = Crude_rate)) +
+        geom_col()
+```
+Consolidate AIAN Missing/Unidentified and AIAN Homicide for map
+```{r}
+unid_uncl_AIAN <- read_csv("data/NamUs_Unid_Uncl_AIAN_Female.csv")
+
+```
+```{r}
+colnames(unid_uncl_AIAN)
+```
+
+```{r}
+unid_uncl_AIAN <- unid_uncl_AIAN %>% 
+  select("Case", "City", "County", "State")
+```
+```{r}
+view(unid_uncl_AIAN)
+```
+```{r}
+miss_AIAN_2 <- read_csv("data/NamUs_Missing_AIAN_Female.csv") 
+  
+```
+```{r}
+view(miss_AIAN_2)
+```
+
+```{r}
+miss_AIAN_2 %>% 
+  rename(Case = "Case Number")
+```
+
+
+```{r}
+miss_AIAN_3 <- miss_AIAN_2 %>% 
+select("Case", "City", "County", "State")
 ```
 
