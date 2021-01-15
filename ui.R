@@ -7,9 +7,9 @@ ui <- navbarPage(title = "MMIWG Crisis",
                                   # Input: type of death  ----
                                   radioButtons("death",
                                                "Type of Violent Death:",
-                                               c("Homicide" = "homicide",
-                                                 "Suicide" = "suicide",
-                                                 "Both" = "bothdeath")),
+                                               c("Homicide" = "Homicide",
+                                                 "Suicide" = "Suicide",
+                                                 "Both" = "All Violent Deaths")),
                                   
                                   hr(),
                                   #Input: Metro or NonMetro
@@ -24,15 +24,11 @@ ui <- navbarPage(title = "MMIWG Crisis",
                                                #c("Hispanic" = "hispanic",
                                                  #"Not Hispanic" = "nothispanic")),
                                   
-                                  
-                                  hr(),
-                                  #Apply Filter Button
-                                  actionButton("apply_filter", "Apply Filter")
                               ),
                               
                               # Main panel for displaying Death outputs ----
                               mainPanel(
-                                  plotOutput("us_death2")
+                                  plotOutput("us_death2", height = 200) 
                               )
                           )
                  ),
