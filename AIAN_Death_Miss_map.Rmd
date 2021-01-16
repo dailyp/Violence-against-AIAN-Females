@@ -1,0 +1,53 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+library(ggplot2)
+library(choroplethr)
+library(readr)
+library(dplyr)
+library(tidyverse)
+data(continental_us_states)
+
+
+
+```{r}
+viol_death_map <- read_csv("data/death_map2.csv")
+view(viol_death_map)
+```
+Remove the "X1" column
+```{r}
+viol_death_map <- viol_death_map %>% 
+  select(-"X1")
+```
+Convert "Deaths" column to integer
+```{r}
+viol_death_map <- viol_death_map %>% 
+  mutate_at(c(2), as.numeric)
+```
+Convert NAs in Deaths column to 0
+```{r}
+viol_death_map$Deaths[is.na(viol_death_map$Deaths)] <- 0
+```
+Per Choroplethr package, create columns region for State, and Value for # Deaths
+```{r}
+viol_death_map$region <- tolower(viol_death_map$State)
+viol_death_map$value <- viol_death_map$Deaths
+```
+```{r}
+
+```
+
+Create map
+```{r}
+state_choropleth(viol_death_map, 
+                 num_colors=9) +
+  scale_fill_brewer(palette="YlOrRd") +
+  labs(title = "AIAN Missing and Violent Deaths by State",
+       #subtitle = "",
+       caption = "source: NamUs, CDC",
+       fill = "Events") 
+```
+
+
