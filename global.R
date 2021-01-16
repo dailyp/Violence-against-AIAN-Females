@@ -7,8 +7,10 @@ library(choroplethr)
 library(choroplethrMaps)
 library(shiny)
 library(shinydashboard)
-
+library(readr)
+data(continental_us_states)
 
 #us_deaths <- read_csv("data/us_deaths.csv")
 us_death2 <- read_csv("data/us_death2.csv")
+viol_death_map <- read_csv("data/viol_death_map.csv")
 
