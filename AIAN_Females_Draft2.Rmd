@@ -91,7 +91,7 @@ miss_AIAN <- miss_AIAN %>%
   select(-"DLC")
 ```
 ```{r}
-view(miss_AIAN)
+#view(miss_AIAN)
 ```
 
 
@@ -377,14 +377,14 @@ unid_uncl_AIAN <- unid_uncl_AIAN %>%
   select("Case", "City", "County", "State")
 ```
 ```{r}
-view(unid_uncl_AIAN)
+#view(unid_uncl_AIAN)
 ```
 ```{r}
 miss_AIAN_2 <- read_csv("data/NamUs_Missing_AIAN_Female.csv") 
   
 ```
 ```{r}
-view(miss_AIAN_2)
+#view(miss_AIAN_2)
 ```
 
 ```{r}
@@ -394,7 +394,160 @@ miss_AIAN_2 %>%
 
 
 ```{r}
-miss_AIAN_3 <- miss_AIAN_2 %>% 
-select("Case", "City", "County", "State")
+miss_AIAN_2 <- miss_AIAN_2 %>% 
+select(-"DLC", -"Last Name", -"First Name", -"Missing Age", -"Sex", -"Race / Ethnicity", -"Date Modified" )
+```
+```{r}
+#view(miss_AIAN_2)
+```
+```{r}
+miss_AIAN_2 <- miss_AIAN_2 %>% 
+  rename(Case = "Case Number")
+```
+```{r}
+#view(miss_AIAN_2)
+```
+```{r}
+muu <- rbind(miss_AIAN_2, unid_uncl_AIAN)
+```
+```{r}
+view(muu)
+```
+pull in the WISKARS trend report that maps violent deaths by County
+```{r}
+#death_map <- read_csv("data/WISQARS_AIAN_viol_suic_nonhisp_allmetros_mapping.csv")
+#view(death_map)
+```
+```{r}
+#colnames(death_map)
+```
+
+```{r}
+# death_map <- death_map %>% 
+#   select("State Name", "Deaths")
+# ```
+# ```{r}
+# death_map <- death_map %>% 
+#   rename(State = "State Name")
+```
+Convert states to lower case to comply with chloroplethr data.map requirement
+```{r}
+#tolower(death_map$State)
+```
+Remove the 52nd row of the deaths dataset for the map, rename "Deaths" to match layout for muu dataset, and convert the Num_Deaths column to numeric.  This will align with the muu file 
+ ```{r}
+# death_math <- death_map[-c(52),]
+ ```
+ ```{r}
+# death_map %>% 
+#   rename(Num_Deaths = "Deaths")
+```
+```{r}
+# death_map_test <- write.csv(death_map, "data/death_map.csv", row.names = TRUE)
+
+```
+
+```{r}
+# death_map <- death_map %>%
+#   mutate_at(c(2), as.numeric)
+```
+
+```{r}
+#death_map$Num_Deaths[is.na(death_map$Num_Deaths)] <- 0 
+```
+
+
+#death_map$Num_Deaths[death_map$Num_Deaths == "--"] <- 0
+
+```{r}
+muu %>% count(State) %>% 
+  rename(Num_MUU = "n")
+ 
+```
+Rename all state abbreviations to full state name
+```{r}
+muu$State[muu$State == "AK"] <- "Alaska"
+muu$State[muu$State == "AZ"] <- "Arizona"
+muu$State[muu$State == "CA"] <- "California"
+muu$State[muu$State == "FL"] <- "Florida"
+muu$State[muu$State == "HI"] <- "Hawaii"
+muu$State[muu$State == "FL"] <- "Florida"
+muu$State[muu$State == "IA"] <- "Iowa"
+muu$State[muu$State == "ID"] <- "Idaho"
+muu$State[muu$State == "ME"] <- "Maine"
+muu$State[muu$State == "MI"] <- "Michigan"
+muu$State[muu$State == "MN"] <- "Minnesota"
+muu$State[muu$State == "MO"] <- "Missouri"
+muu$State[muu$State == "MS"] <- "Mississippi"
+muu$State[muu$State == "MT"] <- "Montana"
+muu$State[muu$State == "NC"] <- "North Carolina"
+muu$State[muu$State == "NE"] <- "Nebraska"
+muu$State[muu$State == "NM"] <- "New Mexico"
+muu$State[muu$State == "NV"] <- "Nevada"
+muu$State[muu$State == "NY"] <- "New York"
+muu$State[muu$State == "OK"] <- "Oklahoma"
+muu$State[muu$State == "OR"] <- "Oregon"
+muu$State[muu$State == "PA"] <- "Pennsylvania"
+muu$State[muu$State == "SC"] <- "South Carolina"
+muu$State[muu$State == "SD"] <- "South Dakota"
+muu$State[muu$State == "TN"] <- "Tennessee"
+muu$State[muu$State == "TX"] <- "Texas"
+muu$State[muu$State == "UT"] <- "Utah"
+muu$State[muu$State == "WA"] <- "Washington"
+muu$State[muu$State == "WI"] <- "Wisconsin"
+
+```
+```{r}
+view(muu)
+```
+```{r}
+muu %>% count(State)
+```
+
+```{r}
+tolower(muu$State)
+```
+read in death_map2 and start over 
+```{r}
+death_map2 <- read_csv("data/death_map2.csv")
+view(death_map2)
+```
+```{r}
+  tolower(death_map2$State)
+```
+```{r}
+death_map2 <- death_map2 %>% 
+  select(-"X1")
+```
+
+```{r}
+death_map2$Deaths[is.na(death_map2$Deaths)] <- 0
+```
+(above) Remove NAs from death_map2 Deaths column & convert to integer. 
+```{r}
+death_map2 <- death_map2 %>%
+   mutate_at(c(2), as.numeric)
+```
+```{r}
+death_map2 <- death_map2 %>% 
+  rename(Num_Deaths = "Deaths")
+```
+```{r}
+#view(death_map2)
+```
+```{r}
+
+```
+```{r}
+view(death_map2)
+```
+```{r}
+death_map2 <- death_map2 %>% 
+  select(-"State")
+```
+
+
+```{r}
+#death_muu_map <- inner_join(death_map2, muu, by = "State")
 ```
 
