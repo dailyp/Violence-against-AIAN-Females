@@ -33,34 +33,16 @@ ui <- navbarPage(title = "MMIWG Crisis",
                           sidebarLayout(
                             sidebarPanel(
                               # Input: U.S. map showing viol deaths & missing
-                              radioButtons("death",
-                                           "Type of Violent Death:",
-                                           c("Homicide" = "Homicide",
-                                             "Suicide" = "Suicide",
-                                             "Both" = "All Violent Deaths")),
-                              
-                              hr(),
-                              #Input: Metro or NonMetro
-                              radioButtons("metro", "Metro or Non-metro:",
-                                           c("Metro" = "Metro",
-                                             "Non Metro" = "Non Metro",
-                                             "All Metros" = "All Metros")),
-                              
-                              #hr(),
-                              #Input: Hispanic combined and separated 
-                              #radioButtons("hispanic", "Show Hispanic vs Non Hispanic:",
-                              #c("Hispanic" = "hispanic",
-                              #"Not Hispanic" = "nothispanic")),
-                              
+                            
                             ),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
-                              #plotOutput("us_death2", height = 200) 
+                              plotOutput("maps", height = 200) 
                             )
                           )
                  ))
-                 #plotOutput("map"))
+                 
 #tabPanel("Citations", verbatimTextOutput("citations"))
 
 
