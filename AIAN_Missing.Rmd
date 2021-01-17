@@ -1,0 +1,49 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+
+
+Missing Persons Exploration 
+read in the NCIC text file of missing persons by Race, 2007-2019
+```{r}
+ncic <- read_csv("data/ncic_missing.txt")
+view(ncic)
+```
+drop unnecessary columns for now 
+```{r}
+ncic <- ncic %>% 
+  select(-"Total", -"Female_ratio_Pop", -"AIAN_ratio")
+```
+convert column to date (Year) and confirm others are numeric (Races)
+```{r}
+sapply(ncic,class)
+```
+Run numbers by Race and Year
+```{r}
+ncic_stacked <- ncic %>%   
+  gather("AIAN", "Asian", "Black", "Unk", "White", key = Race, value = Count)
+ncic_stacked
+
+```
+```{r}
+ncic_stacked %>% 
+  ggplot(aes(x = Year, y = Count, fill = Race)) +
+  geom_area()
+```
+Compute using proportions 
+```{r}
+# Compute percentages with dplyr
+ncic_proport <- ncic_stacked  %>%
+  group_by(Year, Race) %>%
+  summarise(n = sum(Count)) %>%
+  mutate(Percentage = n / sum(n))
+
+# Plot
+ggplot(ncic_proport, aes(x=Year, y=Percentage, fill=Race)) + 
+    geom_area(alpha=0.6 , size=1, colour="black")
+```
+
