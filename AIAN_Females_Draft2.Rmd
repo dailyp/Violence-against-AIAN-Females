@@ -501,12 +501,23 @@ muu$State[muu$State == "WI"] <- "Wisconsin"
 view(muu)
 ```
 ```{r}
-muu %>% count(State)
+muu_state <- muu %>% count(State)
+```
+```{r}
+write.csv(muu_state, "data/muu_state.csv", row.names = TRUE)
+```
+```{r}
+
 ```
 
 ```{r}
 tolower(muu$State)
 ```
+```{r}
+view(muu)
+```
+
+
 read in death_map2 and start over 
 ```{r}
 death_map2 <- read_csv("data/death_map2.csv")
@@ -549,5 +560,14 @@ death_map2 <- death_map2 %>%
 
 ```{r}
 #death_muu_map <- inner_join(death_map2, muu, by = "State")
+```
+Create plot for death trends which allow filter for between death type, metro type, and count vs rate
+```{r}
+us_death2 %>% 
+  filter(Cause_death == "Homicide", Metro_type == "Non Metro") %>%
+  ggplot(aes(x = Year, y = Crude_rate, color = Race))+ 
+  geom_line()
+
+  
 ```
 
