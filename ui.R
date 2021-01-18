@@ -1,5 +1,5 @@
 #Define UI for app ----
-ui <- navbarPage(title = "MMIWG Crisis",
+ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                  
                  tabPanel("Violent Deaths",
                           sidebarLayout(
@@ -16,13 +16,20 @@ ui <- navbarPage(title = "MMIWG Crisis",
                               radioButtons("metro", "Metro or Non-metro:",
                                            c("Metro" = "Metro",
                                              "Non Metro" = "Non Metro",
-                                             "All Metros" = "All Metros")),
+                                             "All Metros" = "All Metros")),                                                                                                                                                                                                                          
+                              
+                              hr(),
+                              #Input: Death trend, rate or number
+                              selectInput("trend", "Trends:",
+                                          c("Number of Deaths" = "Num_Deaths",
+                                             "(Crude) Rate of Deaths"= "Crude_rate")),
                               
                             ),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
-                              plotOutput("us_death2", height = 200) 
+                              plotOutput("us_death2", height = 200),
+                              plotOutput("death_trend", height = 200)
                             )
                           )
                  ),
