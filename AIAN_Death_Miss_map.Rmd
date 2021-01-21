@@ -41,10 +41,10 @@ write.csv(viol_death_map, "data/viol_death_map.csv", row.names = TRUE)
 view(viol_death_map)
 ```
 
-
+#########################
 read in missing/unidentified/unclaimed female AIANs to create comparative map with deaths dataset
 ```{r}
-muu_map <- read_csv("data/muu_state.csv")
+muu_map <- read_csv("data/muu_state2.csv")
 ```
 remove the X1 column
 ```{r}
