@@ -7,7 +7,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                               # Input: type of death  ----
                               radioButtons("death",
                                            "Type of Violent Death:",
-                                           c("Homicide" = "Homicide",
+                                           c("Homicide" = "Homicide", 
                                              "Suicide" = "Suicide",
                                              "Both" = "All Violent Deaths")),
                               
@@ -34,21 +34,42 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                           )
                  ),
                  
-                 tabPanel("Missing", plotOutput("missing")),
-                 
-                 tabPanel("Map", 
+                 tabPanel("Missing", 
                           sidebarLayout(
                             sidebarPanel(
-                              # Input: U.S. map showing viol deaths & missing
-                            
+                              hr(),
+                              #Input: Missing
+                              radioButtons("proportion", "Variations of Proportion:",
+                                           c("Proportion of Missing" = "proportion_of_missing",
+                                             "Poportion of Race" = "proportion_of_race")),
+                             
+                              
                             ),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
-                              plotOutput("maps", height = 200) 
+                              h4("NCIC Missing Person and Unidentified Person, All Genders, 2007-2019"),
+                          plotOutput("missing", height = 200),
+                          plotOutput("missing_pop", height = 200)),
+                          )),
+                 
+                 tabPanel("Map", 
+                         # sidebarLayout(
+                         #   sidebarPanel(
+                              # Input: U.S. map showing viol deaths & missing
+                            
+                          #  ),
+                            
+                            # Main panel for displaying Death outputs ----
+                            mainPanel(
+                              h4("AIAN Females Violent Death (Suicide & Homicide), 2001-2018,
+                                 and AIAN Females Missing/Unidentified/Unclaimed, Jan 4, 2021"),
+                              
+                              leafletOutput("maps", width = 1000) 
                             )
                           )
-                 ))
+                 )
+#                 )
                  
 #tabPanel("Citations", verbatimTextOutput("citations"))
 
