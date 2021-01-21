@@ -8,9 +8,20 @@ library(choroplethrMaps)
 library(shiny)
 library(shinydashboard)
 library(readr)
-data(continental_us_states)
+library(shinythemes)
+library(leaflet)
+library(sf)
+library(rgdal)
+library(plotly)
+
+
+#data(continental_us_states)
 
 #us_deaths <- read_csv("data/us_deaths.csv")
 us_death2 <- read_csv("data/us_death2.csv")
-viol_death_map <- read_csv("data/viol_death_map.csv")
-
+#viol_death_map <- read_csv("data/viol_death_map.csv")
+#US_state <- st_read("data/cb_2018_us_state_5m/cb_2018_us_state_5m.shp")
+ncic_proport <- read_csv("data/ncic_proport.csv")
+#shp_df_dmuu <- read_csv("data/shp_df_dmuu.csv")
+df_dmuu <- read_csv("data/final_death_missing_map.csv")
+#df_dmuu <- read_csv("data/comb_df_map.csv")
