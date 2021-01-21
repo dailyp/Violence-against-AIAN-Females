@@ -21,57 +21,54 @@ server <- function(input, output, session) {
     
     output$missing <- renderPlot({
         ncic_proport %>% 
-        ggplot(aes(x=Year, y=Percentage, fill=Race)) + 
+            ggplot(aes(x=Year, y=Percentage, fill=Race)) + 
             geom_area(alpha=0.6, size=1)+
             scale_fill_brewer(palette = "Dark2")
     })
-     
+    
     output$missing_pop <- renderPlot({
         ncic_stacked %>% 
             ggplot(aes(x = Year, y = Count, fill = Race)) +
             geom_area(alpha=0.6 , size=1)+
             scale_fill_brewer(palette = "Dark2")
     })
-    output$maps <- renderLeaflet({
-        df_dmuu <- read.csv("data/comb_df_map.csv")
-        US_state <- st_read(
-            "data/cb_2018_us_state_5m/cb_2018_us_state_5m.shp")
-        shp_df_dmuu <-  merge(US_state, df_dmuu, by.x="NAME",   by.y='State')
-        
-        
-        bins <- c(0, 10, 20, 50, 100, 200, 500, 1000, Inf)
-        pal <- colorBin("YlOrRd", domain = shp_df_dmuu$value, bins = bins)
-
-        labels <- sprintf(
-            "<strong>%s</strong><br/>%g people </sup>",
-            shp_df_dmuu$NAME,shp_df_dmuu$value
-        ) %>% lapply(htmltools::HTML)
-        
-        leaflet(shp_df_dmuu) %>%
-            setView(-96, 37.8, 4) %>%
-            #addTiles() %>% 
-            addProviderTiles("MapBox", options = providerTileOptions(
-                id = "mapbox.light",
-                accessToken = Sys.getenv('MAPBOX_ACCESS_TOKEN')))%>% 
-            addPolygons(
-                
-                fillColor = ~pal(value),
-                weight = 2,
-                opacity = 1,
-                color = "white",
-                dashArray = "3",
-                fillOpacity = 0.7,
-                label = labels,
-                labelOptions = labelOptions(
-                    style = list("font-weight" = "normal", padding = "3px 8px"),
-                    textsize = "15px",
-                    direction = "auto")
-            ) %>% 
-            addLegend(pal = pal, values = ~value, opacity = 0.7, title = NULL,
-                      position = "bottomright")
+    
+    output$map <- renderPlot({
+        # df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv")
+        # df_dmuu <- read_csv("data/comb_df_map.csv")
+        # 
+        # df_dmuu <- df_dmuu %>% 
+        #     rename(state = "State")
+        # 
+        # df_dmuu <- df_dmuu  %>% 
+        #     inner_join(df) %>% 
+        #     select("code", "state", "value", "category")
+        # 
+        #df_dmuu$hover <- with(df_dmuu, paste(state, '<br>'))
+        df_dmuu %>%
+            l <- list(color = toRGB("white"), width = 2)
+            
+            g <- list(
+                scope = 'usa',
+                projection = list(type = 'albers usa'),
+                showlakes = TRUE,
+                lakecolor = toRGB('white')
+            )
+            
+            fig <- plot_geo(df_dmuu, locationmode = 'USA-states')
+            fig <- fig %>% add_trace(
+                z = ~value, text = ~hover, locations = ~code,
+                color = ~value, colors = 'Purples'
+            )
+            fig <- fig %>% colorbar(title = "Violent Deaths, Missing")
+            fig <- fig %>% layout(
+                title = 'Violent Deaths and Missing by State<br>(Hover for breakdown)',
+                geo = g
+            )
+            fig
+            
     })
     
-
 }
 
 
