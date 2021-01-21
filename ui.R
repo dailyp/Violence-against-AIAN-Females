@@ -65,10 +65,10 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                               h4("AIAN Females Violent Death (Suicide & Homicide), 2001-2018,
                                  and AIAN Females Missing/Unidentified/Unclaimed, Jan 4, 2021"),
                               
-                              leafletOutput("maps", width = 1000) 
+                              plotOutput("map", height = 1000)) 
                             )
                           )
-                 )
+                 
 #                 )
                  
 #tabPanel("Citations", verbatimTextOutput("citations"))
