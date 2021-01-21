@@ -29,6 +29,11 @@ ncic_stacked <- ncic %>%
 ncic_stacked
 
 ```
+convert to csv to use in app 
+```{r}
+write.csv(ncic_stacked, "data/ncic_stacked.csv")
+```
+
 ```{r}
 ncic_stacked %>% 
   ggplot(aes(x = Year, y = Count, fill = Race)) +
@@ -41,6 +46,132 @@ ncic_proport <- ncic_stacked  %>%
   group_by(Year, Race) %>%
   summarise(n = sum(Count)) %>%
   mutate(Percentage = n / sum(n))
+
+# Plot
+ggplot(ncic_proport, aes(x=Year, y=Percentage, fill=Race)) + 
+    geom_area(alpha=0.6 , size=1, colour="black")
+```
+```{r}
+view(ncic_proport)
+```
+```{r}
+ncic_proport %>% 
+  ggplot(aes(x = Year, y = Percentage, color = Race))+ 
+  geom_line()
+```
+```{r}
+write_csv(ncic_proport, "data/ncic_proport.csv")
+```
+Read in WISQARS pop by race report. Combine with ncic_stacked in order to estimate missing rate by Race  
+```{r}
+mf_pop <- read_csv("data/WISQARS_race_pop_allsex_2007_2018.csv")
+
+```
+```{r}
+mf_pop <- mf_pop %>% 
+  select("Race", "Year", "2013 Urbanization (Collapsed) Classification", "Population")
+```
+rename 2013 Urbanization...
+
+```{r}
+mf_pop <- mf_pop %>% 
+  rename(Metro_type = "2013 Urbanization (Collapsed) Classification")
+```
+```{r}
+#view(mf_pop)
+```
+
+```{r}
+mf_pop$Metro_type[is.na(mf_pop$Metro_type)] <- "All Metros"
+```
+```{r}
+mf_pop$Race[mf_pop$Race == "Am Indian/AK Native"] <-  "AIAN"
+```
+```{r}
+mf_pop$Race[mf_pop$Race == "Asian/Pac Islander"] <-  "Asian"
+```
+```{r}
+mf_pop_filter <- mf_pop %>% 
+  filter(Metro_type == "All Metros")
+```
+arrange Race in same order as the ncic_stacked dataset
+```{r}
+mf_pop_filter %>% 
+  arrange(Year) %>% 
+  select(-"Metro_type")
+```
+```{r}
+#write.csv(mf_pop_filter, "data/mf_pop_filter.csv", row.names = TRUE)
+```
+
+```{r}
+#ncic_pop <- inner_join(mf_pop_filter, ncic_stacked, by = "Year")
+```
+```{r}
+#view(ncic_pop)
+```
+
+```{r}
+ncic_proport2 <- ncic_proport %>% 
+  filter(Race != "Unk")
+```
+```{r}
+view(ncic_proport2)
+```
+```{r}
+mf_pop_filter2 <- read_csv("data/mf_pop_filter_w_2019.csv")
+```
+
+```{r}
+view(mf_pop_filter2)
+```
+```{r}
+mf_pop_filter2 %>% 
+  select(-"Metro_type", -"X1")
+```
+```{r}
+mf_pop_filter2 %>% 
+  arrange(Year, Race) %>% 
+  select("Race", "Year", "Population")
+```
+```{r}
+write.csv(mf_pop_filter2, "data/mf_pop_filter2.csv")
+```
+```{r}
+ncic_pop_proport <- merge(ncic_proport2, mf_pop_filter2)
+ncic_pop_proport
+```
+```{r}
+ncic_pop_proport <- ncic_pop_proport %>% 
+  select(-"X1", -"Metro_type")
+```
+```{r}
+ncic_pop_proport <- ncic_pop_proport %>% 
+  mutate(Population_rate = n/Population)
+  
+```
+```{r}
+#view(ncic_pop_proport)
+```
+```{r}
+ncic_pop_proport <- ncic_pop_proport %>% 
+  rename(Number_missing = "n")
+```
+```{r}
+ncic_pop_proport %>% 
+  ggplot(aes(x = Year, y = Population_rate, fill = Race)) +
+  geom_area()
+```
+```{r}
+ncic_pop_proport %>% 
+ggplot(aes(x=Year, y=Population_rate, fill=Race)) + 
+    geom_area(alpha=0.6 , size=1, colour="black")
+```
+```{r}
+ncic_pop_proport2 <- ncic_pop_proport %>%
+  group_by(Year, Race) %>%
+  #summarise(n = sum(Count)) %>%
+  mutate(Rate100 = Population / sum(Population))
 
 # Plot
 ggplot(ncic_proport, aes(x=Year, y=Percentage, fill=Race)) + 
