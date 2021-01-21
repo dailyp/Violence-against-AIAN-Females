@@ -38,7 +38,7 @@ gen_pop <- getCensus(
   key = key,
   name = "acs/acs1/profile", 
   vintage = 2019,
-  vars = c("DP05_0033PE", "DP05_0039PE", "DP05_0038PE", "DP05_0044PE", "DP05_0052PE", "DP05_0037PE", "DP05_0035PE", "DP05_0057PE"),
+  vars = c("DP05_0033PE","DP05_0033E", "DP05_0039PE","DP05_0039E", "DP05_0038PE","DP05_0038E", "DP05_0044PE","DP05_0044E", "DP05_0052PE","DP05_0052E", "DP05_0037PE","DP05_0037E", "DP05_0035PE", "DP05_0035E","DP05_0057PE","DP05_0057E"),
   #United States
   region = "us:*") 
   #State of TN
