@@ -28,6 +28,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
+                              h4("Violent Deaths of Females by Race (non-Hisp) and Metro, 2001-2018"),
                               plotOutput("us_death2", height = 200),
                               plotOutput("death_trend", height = 200)
                             )
@@ -40,8 +41,8 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                               hr(),
                               #Input: Missing
                               radioButtons("proportion", "Variations of Proportion:",
-                                           c("Proportion of Missing" = "proportion_of_missing",
-                                             "Poportion of Race" = "proportion_of_race")),
+                                           c("Proportion of Missing" = "Percentage",
+                                             "Proportion of Race" = "Population_rate")),
                              
                               
                             ),
@@ -49,7 +50,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             # Main panel for displaying Death outputs ----
                             mainPanel(
                               h4("NCIC Missing Person and Unidentified Person, All Genders, 2007-2019"),
-                          plotOutput("missing", height = 200),
+                          #plotOutput("missing", height = 200),
                           plotOutput("missing_pop", height = 200)),
                           )),
                  
@@ -65,7 +66,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                               h4("AIAN Females Violent Death (Suicide & Homicide), 2001-2018,
                                  and AIAN Females Missing/Unidentified/Unclaimed, Jan 4, 2021"),
                               
-                              plotOutput("map", height = 1000)) 
+                              plotlyOutput("map")) 
                             )
                           )
                  
