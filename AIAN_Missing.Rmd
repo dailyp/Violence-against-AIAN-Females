@@ -158,6 +158,10 @@ ncic_pop_proport <- ncic_pop_proport %>%
   rename(Number_missing = "n")
 ```
 ```{r}
+write_csv(ncic_pop_proport, "data/final_ncic_pop_proport.csv")
+```
+
+```{r}
 ncic_pop_proport %>% 
   ggplot(aes(x = Year, y = Population_rate, fill = Race)) +
   geom_area()
@@ -176,5 +180,16 @@ ncic_pop_proport2 <- ncic_pop_proport %>%
 # Plot
 ggplot(ncic_proport, aes(x=Year, y=Percentage, fill=Race)) + 
     geom_area(alpha=0.6 , size=1, colour="black")
+```
+```{r}
+ncic_pop_proport %>% 
+  ggplot(aes(x = Year, y = Population_rate, color = Race)) +
+  geom_line()
+```
+```{r}
+library(forecast)
+ncic_pop_proport %>%
+  stlf(lambda = 0, h = 36, y = "Year") %>%
+  autoplot()
 ```
 
