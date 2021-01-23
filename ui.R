@@ -21,8 +21,8 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                               hr(),
                               #Input: Death trend, rate or number
                               selectInput("trend", "Trends:",
-                                          c("Number of Deaths" = "Num_Deaths",
-                                             "(Crude) Rate of Deaths"= "Crude_rate")),
+                                          c("Number of Deaths" = "Deaths",
+                                             "(Crude) Rate of Deaths"= "Rate")),
                               
                             ),
                             
@@ -41,8 +41,8 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                               hr(),
                               #Input: Missing
                               radioButtons("proportion", "Variations of Proportion:",
-                                           c("Proportion of Missing" = "Percentage",
-                                             "Proportion of Race" = "Population_rate")),
+                                           c("Proportion of Missing" = "Proportion of Missing",
+                                             "Proportion of Race" = "Proportion of Race")),
                              
                               
                             ),
@@ -64,7 +64,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             # Main panel for displaying Death outputs ----
                             mainPanel(
                               h4("AIAN Females Violent Death (Suicide & Homicide), 2001-2018,
-                                 and AIAN Females Missing/Unidentified/Unclaimed, Jan 4, 2021"),
+                                 and NamUs AIAN Females Missing/Unidentified/Unclaimed, Jan 4, 2021"),
                               
                               plotlyOutput("map")) 
                             )
