@@ -18,7 +18,7 @@ key=read_lines('data/key.txt')
 ```{r}
 #create dataset for us census apis
 apis <- listCensusApis()
-#view(apis)
+view(apis)
 ```
 ```{r}
 #look into metadata for acs1/2019
@@ -27,7 +27,7 @@ metadata <- listCensusMetadata(
   vintage = 2019)
 ```
 ```{r}
-#view(metadata)
+view(metadata)
 ```
 ```{r}
 #listCensusMetadata(type = "variables")
@@ -321,7 +321,7 @@ us_death2 <- us_death2 %>%
 ```
 ```{r}
 us_death2 <- us_death2 %>% 
-  rename(Cause_death = "Cause of Death", Metro_type = "2013 Urbanization (Collapsed) Classification", Crude_rate = "Crude Rate", Num_Deaths = "Deaths")
+  rename(Cause_death = "Cause of Death", Metro_type = "2013 Urbanization (Collapsed) Classification", Rate = "Crude Rate")
 ```
 ```{r}
 #view(us_death2)
@@ -360,7 +360,7 @@ write.csv(us_death2,"data/us_death2.csv", row.names = TRUE)
         filter(Cause_death == "Suicide") %>%
         #filter(Metro_type == input$metro) %>%
         # filter(hispanic == input$hispanic)
-        ggplot(aes(x = Race, y = Crude_rate)) +
+        ggplot(aes(x = Race, y = Rate)) +
         geom_col()
 ```
 Consolidate AIAN Missing/Unidentified and AIAN Homicide for map
@@ -540,8 +540,8 @@ death_map2 <- death_map2 %>%
    mutate_at(c(2), as.numeric)
 ```
 ```{r}
-death_map2 <- death_map2 %>% 
-  rename(Num_Deaths = "Deaths")
+ death_map2 <- death_map2 %>% 
+   rename(Num_Deaths = "Deaths")
 ```
 ```{r}
 #view(death_map2)
@@ -565,7 +565,7 @@ Create plot for death trends which allow filter for between death type, metro ty
 ```{r}
 us_death2 %>% 
   filter(Cause_death == "Homicide", Metro_type == "Non Metro") %>%
-  ggplot(aes(x = Year, y = Crude_rate, color = Race))+ 
+  ggplot(aes(x = Year, y = Rate, color = Race))+ 
   geom_line()
 
   
