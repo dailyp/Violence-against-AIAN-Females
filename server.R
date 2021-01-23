@@ -39,7 +39,7 @@ server <- function(input, output, session) {
     output$map <- renderPlotly({
             df_dmuu$hover <- with(df_dmuu, paste(state, '<br>'))
         
-            l <- list(color = toRGB("white"), width = 2)
+            l <- list(color = toRGB("white"), width = 1)
             
             g <- list(
                 scope = 'usa',
@@ -55,11 +55,38 @@ server <- function(input, output, session) {
             )
             fig <- fig %>% colorbar(title = "Count by State")
             fig <- fig %>% layout(
-                title = '<br>(Hover for breakdown)',
+                title = '',
                 geo = g
             )
             fig
             
+    })
+    
+    output$map_pop <- renderPlotly({
+        aian_census19_map$hover <- with(aian_census19_map, paste(state, '<br>'))
+        
+        l <- list(color = toRGB("white"), width = 1)
+
+        g <- list(
+            scope = 'usa',
+            projection = list(type = 'albers usa'),
+            showlakes = TRUE,
+            lakecolor = toRGB('white')
+        )
+        
+        fig <- plot_geo(aian_census19_map, locationmode = 'USA-states')
+        fig <- fig %>% add_trace(
+            z = ~value, text = ~hover, locations = ~code,
+            color = ~value, colors = 'Greens'
+        )
+        fig <- fig %>% colorbar(title = "Population")
+        fig <- fig %>% layout(
+            title = '<br> AIAN alone 2019 Population by State',
+            geo = g
+        )
+        
+        fig
+        
     })
     
 }
