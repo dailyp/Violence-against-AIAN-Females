@@ -16,8 +16,9 @@ server <- function(input, output, session) {
             filter(Cause_death == input$death) %>%
             filter(Metro_type == input$metro) %>%
             ggplot(aes(x = Year, y = .data[[input$trend]], color = Race)) +
-            geom_line()+
+            geom_line(size=1)+
             scale_color_hue(l=40, c=35)
+
     })
     
     #output$missing <- renderPlot({
@@ -28,7 +29,7 @@ server <- function(input, output, session) {
     #})
     
     output$missing_pop <- renderPlot({
-        ncic_pop_proport %>% 
+        ncic_pop_proport2 %>% 
             ggplot(aes(x = Year, y = .data[[input$proportion]], color = Race)) +
             geom_line(size=1)+
             scale_color_hue(l=40, c=35)
@@ -36,6 +37,7 @@ server <- function(input, output, session) {
     })
     
     output$map <- renderPlotly({
+            df_dmuu$hover <- with(df_dmuu, paste(state, '<br>'))
         
             l <- list(color = toRGB("white"), width = 2)
             
