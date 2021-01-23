@@ -63,10 +63,12 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
-                              h4("AIAN Females Violent Death (Suicide & Homicide), 2001-2018,
-                                 and NamUs AIAN Females Missing/Unidentified/Unclaimed, Jan 4, 2021"),
+                              h4("AIAN Females Violent Death, 2001-2018,
+                                 and NamUs Missing/Unidentified/Unclaimed, Jan 2021"),
                               
-                              plotlyOutput("map")) 
+                              plotlyOutput("map"),
+                              hr(),
+                              plotlyOutput("map_pop")) 
                             )
                           )
                  
