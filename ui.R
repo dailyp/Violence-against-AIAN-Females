@@ -30,7 +30,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             mainPanel(
                               h4("Violent Deaths of Females by Race (non-Hisp) and Metro, 2001-2018"),
                               plotOutput("us_death2", height = 200),
-                              plotOutput("death_trend", height = 200)
+                              plotlyOutput("death_trend", height = 200)
                             )
                           )
                  ),
@@ -51,7 +51,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             mainPanel(
                               h4("NCIC Missing Person and Unidentified Person, All Genders, 2007-2019"),
                           #plotOutput("missing", height = 200),
-                          plotOutput("missing_pop", height = 200)),
+                          plotlyOutput("missing_pop", height = 200)),
                           )),
                  
                  tabPanel("Map", 
