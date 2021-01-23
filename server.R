@@ -11,12 +11,12 @@ server <- function(input, output, session) {
             #scale_fill_manual(values=wes_palette(n=3, name="GrandBudapest"))
     })
     
-    output$death_trend <- renderPlot({
+    output$death_trend <- renderPlotly({
         us_death2 %>%
             filter(Cause_death == input$death) %>%
             filter(Metro_type == input$metro) %>%
             ggplot(aes(x = Year, y = .data[[input$trend]], color = Race)) +
-            geom_line(size=1)+
+            geom_line()+
             scale_color_hue(l=40, c=35)
 
     })
@@ -28,10 +28,10 @@ server <- function(input, output, session) {
         #     scale_fill_brewer(palette = "Dark2")
     #})
     
-    output$missing_pop <- renderPlot({
+    output$missing_pop <- renderPlotly({
         ncic_pop_proport2 %>% 
             ggplot(aes(x = Year, y = .data[[input$proportion]], color = Race)) +
-            geom_line(size=1)+
+            geom_line()+
             scale_color_hue(l=40, c=35)
             #scale_fill_brewer(palette = "Dark2")
     })
