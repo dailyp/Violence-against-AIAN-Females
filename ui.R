@@ -28,7 +28,7 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
-                              h4("Violent Deaths of Females by Race (non-Hisp) and Metro, 2001-2018"),
+                              h4("CDC Violent Deaths of Females by Race (non-Hisp) and Metro, 2001-2018"),
                               plotOutput("us_death2", height = 200),
                               plotlyOutput("death_trend", height = 200)
                             )
@@ -63,11 +63,12 @@ ui <- navbarPage(title = "MMIWG Crisis", theme = shinytheme("superhero"),
                             
                             # Main panel for displaying Death outputs ----
                             mainPanel(
-                              h4("AIAN Females Violent Death, 2001-2018,
+                              h4("CDC AIAN Females Violent Death, 2001-2018,
                                  and NamUs Missing/Unidentified/Unclaimed, Jan 2021"),
                               
                               plotlyOutput("map"),
                               hr(),
+                              h4("US Census AIAN 2019 Population by State"),
                               plotlyOutput("map_pop")) 
                             )
                           )
