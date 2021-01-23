@@ -81,7 +81,7 @@ server <- function(input, output, session) {
         )
         fig <- fig %>% colorbar(title = "Population")
         fig <- fig %>% layout(
-            title = '<br> AIAN alone 2019 Population by State',
+            title = '',
             geo = g
         )
         
