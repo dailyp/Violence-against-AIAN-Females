@@ -70,7 +70,7 @@ g <- list(
 fig <- plot_geo(aian_census19_map, locationmode = 'USA-states')
 fig <- fig %>% add_trace(
   z = ~value, text = ~hover, locations = ~code,
-  color = ~value, colors = 'Greens'
+  color = ~value, colors = 'YlGn'
 )
 
 fig <- fig %>% colorbar(title = "Population")
